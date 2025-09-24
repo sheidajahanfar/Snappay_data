@@ -1,2 +1,2 @@
 # Snappay_data
-This project analyzes the impact of demographic, financial, and behavioral variables on default risk
+This project analyzes the impact of different variables on default risk for Snappay a LendTech company
