@@ -9,7 +9,7 @@ This project explores credit usage behavior using SQL and Python. The dataset co
 
 Snappay is a LendTech company providing customers with interest-free credit for purchasing goods. The company earns revenue from commissions on merchant sales.
 
-**Key challenges:**
+### Key challenges:
 
 -Default risk: If customers fail to repay their credit (i.e., “default”), the company loses money and may have to slow down lending.
 
@@ -20,7 +20,7 @@ Snappay is a LendTech company providing customers with interest-free credit for 
 # Why This Analysis Matters
 Goal: Predict and understand which users are more likely to default, and identify behaviors that signal financial risk.
 
-**Business impact:**
+### Business impact:
 
 -Increase credit allocation to low-risk users, boosting revenue.
 
@@ -30,15 +30,15 @@ Goal: Predict and understand which users are more likely to default, and identif
 
 -Provide actionable insights for marketing, loyalty programs, and credit upgrades.
 
-**Data-driven decision-making:**
+### Data-driven decision-making:
 
 By analyzing customer behavior (credit usage, repayment history, engagement with Snapp services), Snappay can:
 
-Build risk models for smarter lending.
+-Build risk models for smarter lending.
 
-Design personalized offers or limits to maximize repayment and user satisfaction.
+-Design personalized offers or limits to maximize repayment and user satisfaction.
 
-Improve business growth sustainably, without overexposing the company to default risk.
+-Improve business growth sustainably, without overexposing the company to default risk.
 
 
 # Data Description
@@ -51,7 +51,7 @@ Improve business growth sustainably, without overexposing the company to default
 
     
   
-# CLeaning process 
+# Cleaning process 
 
 Data quality checks were performed to ensure reliable analysis:
 
@@ -61,12 +61,12 @@ Data quality checks were performed to ensure reliable analysis:
 
 Ideally, this ratio should always fall between 0 and 1. However, ~4,000 records showed ratios greater than 1, which is logically impossible (full usage cannot exceed total usage).    
 
-**-Resolution:**These anomalies likely reflect data entry or aggregation errors. Since the dataset is sufficiently large, the safest decision was to remove these ~4,000 rows to avoid distorting downstream analysis.
+**-Resolution:** These anomalies likely reflect data entry or aggregation errors. Since the dataset is sufficiently large, the safest decision was to remove these ~4,000 rows to avoid distorting downstream analysis.
 
 
 # Lets Dive in
 
-**1.EDA and visualization in Python**
+### EDA and visualization in Python
 
 I used pandas + matplotlib/seaborn to summarize all numeric features quickly and Check distributions, outliers, skewness.I believe this approach is fast  and gives a solid sense of the data before modeling.
 
@@ -76,77 +76,81 @@ From the EDA step, I was able to draw insightful information about the correlati
 
 <img width="1174" height="659" alt="Screenshot 2025-09-25 at 15 43 15" src="https://github.com/user-attachments/assets/9e77322a-5d9f-4026-adfb-ff1bf404846d" />
 
-**My Interpretation:**
 
-**1-Age by Default Status**
+### Interpretation:
 
-Observation: Defaulters (orange) seem more concentrated in the late 20s to mid-30s.
+**1-Age by Default Status:**
 
-Non-defaulters (blue) are more common in late 40s to 50s.
+-Defaulters (orange) seem more concentrated in the late 20s to mid-30s.
 
-Interpretation: Younger borrowers may carry higher default risk (possibly less stable income, less financial experience).
+-Non-defaulters (blue) are more common in late 40s to 50s.
 
-Business Insight: Age could be a risk segmenting factor. 
+-Younger borrowers may carry higher default risk (possibly less stable income, less financial experience).
+
+-Business Insight: Age could be a risk segmenting factor. 
 
 
   
-**2. Total Credit Usage Amount**
+**2. Total Credit Usage Amount:**
 
-Observation: Both groups skew heavily toward lower values (long right tail).
+-Both groups skew heavily toward lower values (long right tail).
 
-Defaulters and non-defaulters overlap a lot, but defaulters seem a bit more concentrated at higher usage amounts.
+-Defaulters and non-defaulters overlap a lot, but defaulters seem a bit more concentrated at higher usage amounts.
 
-Interpretation: Very high credit usage is associated with increased likelihood of default.
+- Very high credit usage is associated with increased likelihood of default.
 
-Business Insight: Customers with unusually high spending relative to peers may need tighter monitoring.
-
-
-**3. Total Full Credit Usage Count**
-Observation: Users who repeatedly fully use their credit line are significantly more likely to default. 
-Interpretation: number of fully using accounts can be directly related to likelihood of default. as almost all of them fully used their credit more than 5 times , I am thinking about making a binary variable (≥6 full usages) here.
-Business Insight: Customers that fully use their credits more and more, are prone to default.
-
-**4. External Credit Score**
-
-Observation: Non-defaulters are concentrated at higher scores (550+).
-
-Defaulters dominate at lower scores (300–450).
-
-Interpretation: External score works as expected — higher score = lower default risk.
-
-Business Insight: This is a strong signal and likely one of the best predictors.
-
-**5. Total Credit Usage Count**
-
-Observation:Both groups overlap, but defaulters appear more frequent at lower counts.
-
-Interpretation: More transactions = more financial activity, which correlates with lower default probability (financially active customers are healthier)
-
-Business Insight: Customers with very few credit transactions may be higher risk.
-
-**6. Total Repayment Delay Count**
-
-Observation: Clear separation: defaulters dominate at high values (15–20 delays).
-
-Non-defaulters cluster at low values.
-
-Interpretation: This is gold. Repayment delays are a direct red flag for default.
-
-Business Insight: A monitoring rule could flag anyone with >10 delays as high risk.
+-Business Insight: Customers with unusually high spending relative to peers may need tighter monitoring.
 
 
-**7. Snappfood Orders Count**
-Observation:
+**3. Total Full Credit Usage Count:**
 
-Defaulters dominate at low order counts.
+-Users who repeatedly fully use their credit line are significantly more likely to default. 
 
-Non-defaulters dominate at high order counts (>500).
+-number of fully using accounts can be directly related to likelihood of default. as almost all of them fully used their credit more than 5 times , I am thinking about making a binary variable (≥6 full usages) here.
 
-Interpretation: Weird but interesting! Customers who order food more often are less likely to default (maybe correlated with stable income or lifestyle).
+-Business Insight: Customers that fully use their credits more and more, are prone to default.
 
-Business Insight: Alternative behavioral data (like food delivery activity) can be a surprisingly strong predictor.
+**4. External Credit Score:**
 
-# Quantify observations
+-Non-defaulters are concentrated at higher scores (550+).
+
+-Defaulters dominate at lower scores (300–450).
+
+-External score works as expected — higher score = lower default risk.
+
+-Business Insight: This is a strong signal and likely one of the best predictors.
+
+**5. Total Credit Usage Count:**
+
+-Both groups overlap, but defaulters appear more frequent at lower counts.
+
+-More transactions = more financial activity, which correlates with lower default probability (financially active customers are healthier)
+
+-Business Insight: Customers with very few credit transactions may be higher risk.
+
+**6. Total Repayment Delay Count:**
+
+-Clear separation: defaulters dominate at high values (15–20 delays).
+
+-Non-defaulters cluster at low values.
+
+-This is gold. Repayment delays are a direct red flag for default.
+
+-Business Insight: A monitoring rule could flag anyone with >10 delays as high risk.
+
+
+**7. Snappfood Orders Count:**
+
+-Defaulters dominate at low order counts.
+
+-Non-defaulters dominate at high order counts (>500).
+
+-Weird but interesting! Customers who order food more often are less likely to default (maybe correlated with stable income or lifestyle).
+
+-Business Insight: Alternative behavioral data (like food delivery activity) can be a surprisingly strong predictor.
+
+
+### Quantify observations
 
 First, I calculated the correlations and ranked them based on this measure:
 
@@ -165,7 +169,7 @@ First, I calculated the correlations and ranked them based on this measure:
 7-Total full credit usage count (+0.017) → almost no correlation (may still matter in interactions).
 
 
-**univariate logistic regressions**  
+### univariate logistic regressions
 
 I ran univariate logistic regressions for each feature against default status and put the results in a Table
 
@@ -175,7 +179,7 @@ I ran univariate logistic regressions for each feature against default status an
 
 
 
-**multivariate logistic regression**  
+### multivariate logistic regression
 My Next step is to run a multivariate logistic regression to  See which features remain significant when included together, and how their coefficients change compared to the univariate models:
 
 
@@ -185,7 +189,7 @@ My Next step is to run a multivariate logistic regression to  See which features
 
 
 
-My Insights:
+###  Insights:
 
 -Dominant predictor: total_repayment_delay_count  captures most of the default risk.
 
@@ -231,7 +235,7 @@ I want to Make features more informative by combining raw variables into meaning
 
 Lets start with a benchmark and then more complex one:  
 
-**1-Baseline Logistic Regression**  
+### 1-Baseline Logistic Regression
 
 A simple, interpretable model to serve as a benchmark:
 
@@ -252,7 +256,7 @@ A simple, interpretable model to serve as a benchmark:
 -Performance on minority class (defaulters) is lower (recall 0.64). This is expected with class imbalance.
 
 
-**2-Random Forest Classifier**
+### 2-Random Forest Classifier
 
 Surprisingly, Random Forest did not outperform logistic regression here.
 
@@ -288,24 +292,26 @@ Possible reasons:
 
 # Business Implications
 
-**Proactive Risk Management**
+### Proactive Risk Management
 
 -Focusing on customers with high repayment delay ratios and low credit scores for early intervention.
 
 -Using the logistic regression model to assign risk scores and prioritize follow-up.
 
-**Customer Segmentation**
+### Customer Segmentation
 
 -Considering segmenting customers based on age, credit score bins, and usage behavior.
 
 -Targeted communication or credit limits can be adjusted per segment.
 
-**Monitoring & Reporting**
+### Monitoring & Reporting
 
 -Track the engineered ratios (delays per transaction, full usage ratio) monthly.
 
 -Integrate predictive scores into dashboards for continuous monitoring.
 
+
 Thank you for your attention
+
 Sheida Jahanfar
 
