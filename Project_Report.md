@@ -1,7 +1,8 @@
 
 # Project Overview
 
-This project explores credit usage behavior using SQL and Python. The dataset contains customer-level information such as credit consumption, upgrade patterns, and demographic details. The focus is on data preparation, feature engineering, and exploratory data analysis (EDA) to build a foundation for predictive modeling of default events.
+This project explores credit usage behavior using SQL and Python. The dataset contains customer-level information such as credit consumption, upgrade patterns, and demographic details for a LendTech platform. The focus is on data preparation, feature engineering, and exploratory data analysis (EDA) and then predict customer credit default risk using both statistical and machine learning methods.
+
 
 
 # Business Problem
@@ -63,20 +64,19 @@ Ideally, this ratio should always fall between 0 and 1. However, ~4,000 records 
 **-Resolution:**These anomalies likely reflect data entry or aggregation errors. Since the dataset is sufficiently large, the safest decision was to remove these ~4,000 rows to avoid distorting downstream analysis.
 
 
-# Methodology
+# Lets Dive in
 
 **1.EDA and visualization in Python**
 
 I used pandas + matplotlib/seaborn to summarize all numeric features quickly and Check distributions, outliers, skewness.I believe this approach is fast  and gives a solid sense of the data before modeling.
 
-# Analysis & Findings
 
 From the EDA step, I was able to draw insightful information about the correlation of important metrics in defaul risk:
 
 
 <img width="1174" height="659" alt="Screenshot 2025-09-25 at 15 43 15" src="https://github.com/user-attachments/assets/9e77322a-5d9f-4026-adfb-ff1bf404846d" />
 
-**Interpretation:**
+**My Interpretation:**
 
 **1-Age by Default Status**
 
@@ -199,20 +199,113 @@ My Insights:
 
 
 
-Connect each insight back to the business case
+# Business Implications of this information
 
-6. Business Implications
+1-Monitor repayment behavior closely, Focus on total_repayment_delay_count.
 
-What actions could a company take based on your findings?
+Intervene early when customers start showing delays: Flag high-delay customers for manual review or stricter credit limits.
 
-Example: “Customers with late payments in the first 3 months are X% more likely to default. Lenders should implement early-warning systems.”
+2-Leverage credit score for risk-based decisions: Use external_credit_score to assign credit limits or pricing.
 
-7. Limitations & Next Steps
+Offer lower limits or stricter terms for low-score customers.
 
-Be honest about what your analysis can’t do (e.g., limited dataset, SQL only, no predictive modeling yet)
+3-Segment customers by age and engagement: Younger customers → higher risk → closer monitoring.
 
-Suggest what could be added if you had more time/resources
+Engaged users (snappfood_orders_count high) → lower risk → consider incentives to retain them.
 
-8. Conclusion
+4- Focus on risk-adjusted growth, not just usage Raw credit usage alone doesn’t predict default; don’t give high limits blindly.
 
-Wrap up in 3–4 sentences: what you found, why it’s important, and how it could be used in a real business context
+
+# Some useful ratios:
+
+I want to Make features more informative by combining raw variables into meaningful ratios.
+
+-Delays per usage: Captures default risk relative to activity. A user with many delays but few transactions is riskier than someone with same delays but many transactions.
+
+-Full usage ratio: how often the user maxed out credit, controlling for activity.
+
+-Average spend per order: spending behavior per order, rather than total usage.
+
+
+# Predictive modeling:  
+
+Lets start with a benchmark and then more complex one:  
+
+**1-Baseline Logistic Regression**  
+
+A simple, interpretable model to serve as a benchmark:
+
+<img width="800" height="172" alt="Screenshot 2025-09-25 at 18 40 49" src="https://github.com/user-attachments/assets/13ec3635-bcc5-4a1b-ae4f-689399c8e624" />
+
+**Model's overall performance** 
+
+-Accuracy: 0.91 → 91% of predictions are correct.
+
+-Macro avg: 0.82 → averages metrics ignoring class imbalance.
+
+-Weighted avg: 0.90 → averages metrics considering class imbalance.
+
+-ROC-AUC: 0.953 → excellent discriminative ability. Model distinguishes defaulters vs non-defaulters very well.
+
+-Logistic regression captures the main signal (repayment delays, age, credit score).
+
+-Performance on minority class (defaulters) is lower (recall 0.64). This is expected with class imbalance.
+
+
+**2-Random Forest Classifier**
+
+Surprisingly, Random Forest did not outperform logistic regression here.
+
+Possible reasons:
+
+-Strong linear signal in the dataset (repayment_delay_count, external_credit_score, age).
+
+-Random Forest may overfit the majority class despite class_weight='balanced'.
+
+-Feature engineering may not introduce strong non-linear patterns for RF to exploit.  
+
+<img width="837" height="214" alt="Screenshot 2025-09-25 at 18 46 19" src="https://github.com/user-attachments/assets/5b7e0a89-f4b1-4eb9-8afe-54b65fe04c08" />
+
+
+
+
+**Baseline Model: Logistic Regression:**
+-Accuracy: 91%
+
+-ROC-AUC: 0.953 → excellent ability to distinguish high-risk customers
+
+-Defaulter recall: 64% → model identifies most defaulters, but some are missed
+
+**Random Forest Model:**
+
+-Accuracy: 90%
+
+-ROC-AUC: 0.946
+
+-Slightly lower recall for defaulters (61%)
+
+
+
+# Business Implications
+
+**Proactive Risk Management**
+
+-Focusing on customers with high repayment delay ratios and low credit scores for early intervention.
+
+-Using the logistic regression model to assign risk scores and prioritize follow-up.
+
+**Customer Segmentation**
+
+-Considering segmenting customers based on age, credit score bins, and usage behavior.
+
+-Targeted communication or credit limits can be adjusted per segment.
+
+**Monitoring & Reporting**
+
+-Track the engineered ratios (delays per transaction, full usage ratio) monthly.
+
+-Integrate predictive scores into dashboards for continuous monitoring.
+
+Thank you for your attention
+Sheida Jahanfar
+
