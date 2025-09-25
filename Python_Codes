@@ -1,0 +1,341 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
+# In[2]:
+
+
+df = pd.read_csv("/Users/sheida/Documents/snappay_users_cleaned.csv") 
+
+
+# In[3]:
+
+
+# Select numeric columns 
+numeric_cols = df.select_dtypes(include=['int64','float64']).columns.tolist()
+print("Numeric columns:", numeric_cols)
+
+
+# In[4]:
+
+
+# Summary stats including custom percentiles (25%, 50%, 75%, 95%, 99%)
+summary_stats = df[numeric_cols].describe(percentiles=[0.25, 0.5, 0.75, 0.95, 0.99]).T
+summary_stats['range'] = summary_stats['max'] - summary_stats['min']
+summary_stats
+
+
+# In[5]:
+
+
+df[numeric_cols].hist(bins=30, figsize=(15,10))
+plt.tight_layout()
+plt.show()
+
+
+# In[14]:
+
+
+import matplotlib.pyplot as plt
+
+key_features = [
+    "external_credit_score",
+    "age",
+    "total_credit_usage_count",
+    "total_credit_usage_amount",
+    "total_full_credit_usage_count",
+    "total_repayment_delay_count",
+    "snapp_rides_count",
+    "snappfood_orders_count"
+]
+
+for col in key_features:
+    plt.figure(figsize=(8,4))
+    sns.histplot(data=df, x=col, hue="is_defaulter", bins=30, kde=False, stat="density", common_norm=False)
+    plt.title(f"Distribution of {col} by Default Status")
+    plt.show()
+
+
+# In[15]:
+
+
+df.groupby("is_defaulter").agg({
+    "age": ["mean", "median", "std"],
+    "total_credit_usage_amount": ["mean", "median", "std"],
+    "external_credit_score": ["mean", "median", "std"],
+    "total_repayment_delay_count": ["mean", "median", "std"],
+    "snappfood_orders_count": ["mean", "median", "std"],
+    "total_credit_usage_count": ["mean", "median", "std"],
+    "total_full_credit_usage_count": ["mean", "median", "std"]
+})
+
+
+# In[28]:
+
+
+#ranked list of features by strength of relationship with default.
+from scipy.stats import pointbiserialr
+
+for col in ["age", "total_credit_usage_amount", "external_credit_score",
+            "total_repayment_delay_count", "snappfood_orders_count","total_credit_usage_count", "total_full_credit_usage_count"]:
+    corr, p = pointbiserialr(df["is_defaulter"], df[col])
+    print(f"{col}: correlation={corr:.3f}, p-value={p:.3f}")
+
+
+# In[23]:
+
+
+get_ipython().system('pip install statsmodels')
+
+
+
+# In[30]:
+
+
+#univariate logistic regressions for each feature against default status. where each block represents a regression of a single predictor (feature) on a binary outcome
+import statsmodels.api as sm
+
+for col in ["age", "total_credit_usage_amount", "external_credit_score",
+            "total_repayment_delay_count", "snappfood_orders_count","total_credit_usage_count","total_full_credit_usage_count"]:
+    X = sm.add_constant(df[col])
+    y = df["is_defaulter"]
+    model = sm.Logit(y, X).fit(disp=0)
+    print(f"{col}:\n", model.summary2().tables[1], "\n")
+
+
+# In[31]:
+
+
+#My Next step is to do multivariate logistic regression to  See which features remain significant when included together, and how their coefficients change compared to the univariate models.
+
+import statsmodels.api as sm
+
+X = df[['age', 'total_credit_usage_amount', 'total_credit_usage_count', 
+        'total_full_credit_usage_count', 'external_credit_score', 
+        'total_repayment_delay_count', 'snappfood_orders_count']]
+y = df['is_defaulter']
+
+X = sm.add_constant(X)  # adds the intercept
+model = sm.Logit(y, X)
+result = model.fit()
+print(result.summary())
+
+
+# In[32]:
+
+
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Example data
+coef = [3.1361, -0.0474, 2.281e-10, -0.0005, 0.0016, -0.0137, 0.4372, -0.0034]
+conf_low = [2.918, -0.051, -1.4e-09, -0.003, -0.006, -0.014, 0.429, -0.004]
+conf_high = [3.354, -0.044, 1.86e-09, 0.001, 0.009, -0.013, 0.446, -0.003]
+features = ['const', 'age', 'total_credit_usage_amount', 'total_credit_usage_count',
+            'total_full_credit_usage_count', 'external_credit_score',
+            'total_repayment_delay_count', 'snappfood_orders_count']
+
+df_plot = pd.DataFrame({
+    'Feature': features,
+    'Coef': coef,
+    'CI_low': conf_low,
+    'CI_high': conf_high
+})
+
+plt.figure(figsize=(8,6))
+plt.errorbar(df_plot['Coef'], df_plot['Feature'], 
+             xerr=[df_plot['Coef'] - df_plot['CI_low'], df_plot['CI_high'] - df_plot['Coef']], 
+             fmt='o', color='blue', ecolor='lightgray', elinewidth=3, capsize=4)
+plt.axvline(0, color='red', linestyle='--')
+plt.xlabel('Coefficient (log-odds)')
+plt.title('Multivariate Logistic Regression Coefficients')
+plt.gca().invert_yaxis()
+plt.show()
+
+
+# In[36]:
+
+
+#risk map that shows how default probability changes with repayment delays and credit score.
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+
+# Example coefficients from my model
+coef = {
+    'const': 3.1361,
+    'age': -0.0474,
+    'total_repayment_delay_count': 0.4372,
+    'external_credit_score': -0.0137,
+    'snappfood_orders_count': -0.0034,
+    'total_credit_usage_amount': 2.281e-10,
+    'total_credit_usage_count': -0.0005,
+    'total_full_credit_usage_count': 0.0016
+}
+
+# Create a grid of repayment delays and credit scores
+delays = np.arange(0, 10, 1)       # 0 to 9 delays
+scores = np.arange(300, 850, 10)   # credit score range
+
+# Assume average values for other features
+avg_age = 35
+avg_orders = 20
+avg_amount = 5000
+avg_count = 10
+avg_full_count = 5
+
+grid_prob = np.zeros((len(scores), len(delays)))
+
+for i, score in enumerate(scores):
+    for j, delay in enumerate(delays):
+        log_odds = (coef['const'] +
+                    coef['age'] * avg_age +
+                    coef['total_repayment_delay_count'] * delay +
+                    coef['external_credit_score'] * score +
+                    coef['snappfood_orders_count'] * avg_orders +
+                    coef['total_credit_usage_amount'] * avg_amount +
+                    coef['total_credit_usage_count'] * avg_count +
+                    coef['total_full_credit_usage_count'] * avg_full_count)
+        prob = 1 / (1 + np.exp(-log_odds))
+        grid_prob[i, j] = prob
+
+# Plot heatmap
+plt.figure(figsize=(10,6))
+plt.imshow(grid_prob, origin='lower', aspect='auto', 
+           extent=[delays.min(), delays.max(), scores.min(), scores.max()],
+           cmap='coolwarm', vmin=0, vmax=1)
+plt.colorbar(label='Predicted Probability of Default')
+plt.xlabel('Total Repayment Delays')
+plt.ylabel('External Credit Score')
+plt.title('Customer Default Risk Map')
+plt.show()
+
+
+
+# In[38]:
+
+
+# combining raw variables into meaningful ratios.
+
+
+import pandas as pd
+import numpy as np
+
+
+# 1. Delay ratio: total delays per total usage
+df['delay_ratio'] = df['total_repayment_delay_count'] / df['total_credit_usage_count']
+# Replace division by zero or NaN with 0
+df['delay_ratio'] = df['delay_ratio'].replace([np.inf, -np.inf], 0).fillna(0)
+
+# 2. Full usage ratio: how often the credit was fully used
+df['full_usage_ratio'] = df['total_full_credit_usage_count'] / df['total_credit_usage_count']
+df['full_usage_ratio'] = df['full_usage_ratio'].replace([np.inf, -np.inf], 0).fillna(0)
+
+# 3. Average spend per order
+df['avg_spend_order'] = df['total_credit_usage_amount'] / df['snappfood_orders_count']
+df['avg_spend_order'] = df['avg_spend_order'].replace([np.inf, -np.inf], 0).fillna(0)
+
+# Quick check
+df[['delay_ratio', 'full_usage_ratio', 'avg_spend_order']].head()
+
+
+# In[ ]:
+
+
+#lets start modeling:
+
+
+# In[41]:
+
+
+#Baseline Logistic Regression:a simple, interpretable model to serve as a benchmark.
+
+#select features:
+features = [
+    'age', 
+    'external_credit_score', 
+    'total_repayment_delay_count', 
+    'snappfood_orders_count', 
+    'delay_ratio', 
+    'full_usage_ratio', 
+    'avg_spend_order'
+]
+X = df[features]
+y = df['is_defaulter']
+
+#Split into train/test:
+from sklearn.model_selection import train_test_split
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+
+# In[43]:
+
+
+#logistic regression:
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, roc_auc_score
+
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+y_pred_proba = model.predict_proba(X_test)[:,1]
+
+print(classification_report(y_test, y_pred))
+print("ROC-AUC:", roc_auc_score(y_test, y_pred_proba))
+
+
+# In[44]:
+
+
+# now lets run Random forest:
+# import and initialize model:
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, roc_auc_score
+
+# Initialize Random Forest
+rf_model = RandomForestClassifier(
+    n_estimators=200,    # number of trees
+    max_depth=None,      # allow full depth, can tune later
+    random_state=42,
+    class_weight='balanced'  # handle class imbalance
+)
+
+
+# In[45]:
+
+
+#Fit the model
+rf_model.fit(X_train, y_train)
+
+
+# In[46]:
+
+
+y_pred_rf = rf_model.predict(X_test)
+y_pred_proba_rf = rf_model.predict_proba(X_test)[:,1]
+
+print(classification_report(y_test, y_pred_rf))
+print("ROC-AUC:", roc_auc_score(y_test, y_pred_proba_rf))
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
+
+
+
+
