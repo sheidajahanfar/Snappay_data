@@ -1,46 +1,75 @@
 
-**Project Overview**
+# Project Overview
 
 This project explores credit usage behavior using SQL and Python. The dataset contains customer-level information such as credit consumption, upgrade patterns, and demographic details. The focus is on data preparation, feature engineering, and exploratory data analysis (EDA) to build a foundation for predictive modeling of default events.
 
-**motivation**
 
-Predicting default risk is one of the most important challenges in financial services. By identifying customers who are more likely to default, businesses can:  
--Reduce financial losses through early intervention  
--Adjust credit limits and interest rates based on risk  
--Improve customer segmentation for responsible lending
--Strengthen compliance with risk management regulations   
-This project demonstrates how to transform raw credit usage data into clean, interpretable, and predictive features that can serve as inputs for machine learning models.
+# Business Problem
 
-2. Data Description
+Snappay is a LendTech company providing customers with interest-free credit for purchasing goods. The company earns revenue from commissions on merchant sales.
 
-This project analyzes the data for a LendTech company. The table has 80K rows with these columns:
+**Key challenges:**
+
+-Default risk: If customers fail to repay their credit (i.e., “default”), the company loses money and may have to slow down lending.
+
+-Growth limitation: Expanding credit to new users without understanding risk could lead to cash flow issues.
+
+-Optimization of credit allocation: Identifying safe vs. risky customers allows the company to grow smarter, lending more to low-risk users while minimizing exposure to high-risk users.
+
+# Why This Analysis Matters
+Goal: Predict and understand which users are more likely to default, and identify behaviors that signal financial risk.
+
+**Business impact:**
+
+-Increase credit allocation to low-risk users, boosting revenue.
+
+-Reduce defaults by identifying risky users early.
+
+-Optimize product strategy by understanding credit usage patterns.
+
+-Provide actionable insights for marketing, loyalty programs, and credit upgrades.
+
+**Data-driven decision-making:**
+
+By analyzing customer behavior (credit usage, repayment history, engagement with Snapp services), Snappay can:
+
+Build risk models for smarter lending.
+
+Design personalized offers or limits to maximize repayment and user satisfaction.
+
+Improve business growth sustainably, without overexposing the company to default risk.
+
+
+# Data Description
+
+ The table data has 80K rows with these columns:  
+
+<img width="1537" height="775" alt="image" src="https://github.com/user-attachments/assets/552178ea-406f-4062-a4c0-99493f029d65" />
 
 
 
-Key variables and what they represent
+    
+  
+# CLeaning process 
 
-Any cleaning/preprocessing steps
+Data quality checks were performed to ensure reliable analysis:
 
-3. Business Problem / Use Case
+-**Missing Values:** All credit-related columns (e.g., total usage count, full usage count) were checked for NULL values. No major missing values were found that required imputation.
 
-Define the business question(s) your SQL queries address
+-**Inconsistent Ratios:** A key derived feature was Full Usage Ratio:(Full Usage Ratio=Total Full Credit Usage Count/Total Credit Usage Count)
 
-Example:
+Ideally, this ratio should always fall between 0 and 1. However, ~4,000 records showed ratios greater than 1, which is logically impossible (full usage cannot exceed total usage).    
 
-Which customer groups are most likely to default?
+**-Resolution:**These anomalies likely reflect data entry or aggregation errors. Since the dataset is sufficiently large, the safest decision was to remove these ~4,000 rows to avoid distorting downstream analysis.
 
-How do repayment patterns differ across segments?
 
-Why this matters to a company
+# Methodology
 
-4. Methodology
+**1.EDA and visualization in Python**
 
-How you approached the analysis
+I used pandas + matplotlib/seaborn to summarize all numeric features quickly and Check distributions, outliers, skewness.I believe this approach is fast  and gives a solid sense of the data before modeling.
 
-Which SQL techniques you used (joins, window functions, aggregations, etc.)
 
-Any assumptions you made
 
 5. Analysis & Findings
 
