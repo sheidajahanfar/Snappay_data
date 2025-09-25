@@ -69,7 +69,35 @@ Ideally, this ratio should always fall between 0 and 1. However, ~4,000 records 
 
 I used pandas + matplotlib/seaborn to summarize all numeric features quickly and Check distributions, outliers, skewness.I believe this approach is fast  and gives a solid sense of the data before modeling.
 
+# Analysis & Findings
 
+From the EDA step, I was able to draw insightful information about the correlation of important metrics in defaul risk:
+
+
+<img width="1174" height="659" alt="Screenshot 2025-09-25 at 15 43 15" src="https://github.com/user-attachments/assets/9e77322a-5d9f-4026-adfb-ff1bf404846d" />
+
+**Interpretation:**
+
+**1-Age by Default Status**
+
+Observation: Defaulters (orange) seem more concentrated in the late 20s to mid-30s.
+
+Non-defaulters (blue) are more common in late 40s to 50s.
+
+Interpretation: Younger borrowers may carry higher default risk (possibly less stable income, less financial experience).
+
+Business Insight: Age could be a risk segmenting factor. 
+
+
+
+**2. Total Credit Usage Amount**
+Observation: Both groups skew heavily toward lower values (long right tail).
+
+Defaulters and non-defaulters overlap a lot, but defaulters seem a bit more concentrated at higher usage amounts.
+
+Interpretation: Very high credit usage is associated with increased likelihood of default.
+
+Business Insight: Customers with unusually high spending relative to peers may need tighter monitoring.
 
 5. Analysis & Findings
 
