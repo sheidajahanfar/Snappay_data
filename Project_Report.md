@@ -165,16 +165,39 @@ First, I calculated the correlations and ranked them based on this measure:
 7-Total full credit usage count (+0.017) → almost no correlation (may still matter in interactions).
 
 
-Then, I ran a univariate logistic regressions for each feature against default status and put the results in a Table
+**univariate logistic regressions**  
+
+I ran univariate logistic regressions for each feature against default status and put the results in a Table
 
 <img width="1039" height="211" alt="Screenshot 2025-09-25 at 17 07 28" src="https://github.com/user-attachments/assets/7a07d95b-eb9f-4621-88e0-731bf267c138" />
 
 
-5. Analysis & Findings
 
-Present insights from your queries (in words, not just SQL)
 
-Use simple tables or even charts (you can save them as .png in a /docs folder and embed them in Markdown like ![Alt text](docs/plot.png))
+
+**multivariate logistic regression**  
+My Next step is to run a multivariate logistic regression to  See which features remain significant when included together, and how their coefficients change compared to the univariate models:
+
+
+
+<img width="854" height="416" alt="Screenshot 2025-09-25 at 17 35 27" src="https://github.com/user-attachments/assets/992c7dff-6903-4ad5-9759-4be75c1cb65b" />
+
+
+
+
+My Insights:
+
+-Dominant predictor: total_repayment_delay_count  captures most of the default risk.
+
+-Features losing importance: Usage amounts/counts become insignificant when delay is included — they were likely correlated with delays.
+
+-Credit score still matters, independent of delays.
+
+-Age and orders remain significant — subtle but meaningful effects.
+
+**And this shows why multivariate models are crucial: univariate correlations can be misleading.**
+
+
 
 Connect each insight back to the business case
 
