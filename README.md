@@ -3,19 +3,19 @@
 
 ### Project Overview
 
-This project analyzes and predicts customer credit default risk for a LendTech platform. It combines statistical analysis, feature engineering, and machine learning models to identify high-risk customers and support proactive risk management.
+This project explores credit usage behavior using SQL and Python. The dataset contains customer-level information such as credit consumption, upgrade patterns, and demographic details for a LendTech platform. The focus is on data preparation, feature engineering, and exploratory data analysis (EDA) and then predict customer credit default risk using both statistical and machine learning methods.
 
-Objectives
+### Objectives
 
 Identify key factors influencing customer default risk.
 
 Engineer meaningful features such as repayment delay ratios, full usage ratios, and average spend per order.
 
-Build and compare predictive models (Logistic Regression, Random Forest, XGBoost).
+Build and compare predictive models (Logistic Regression, Random Forest).
 
 Provide actionable insights to inform credit policies, customer segmentation, and early intervention strategies.
 
-Data
+### Data
 
 The dataset includes anonymized customer-level features such as:
 
@@ -43,7 +43,7 @@ avg_spend_order – average spending per order
 
 Binned credit scores (low / medium / high)
 
-Methodology
+### Methodology
 
 Exploratory Data Analysis (EDA) – examine distributions, correlations, and feature-target relationships.
 
@@ -51,11 +51,11 @@ Univariate and Multivariate Logistic Regression – identify significant predict
 
 Feature Engineering – create ratios and bins to capture subtle patterns in customer behavior.
 
-Predictive Modeling – baseline logistic regression, Random Forest, and XGBoost.
+Predictive Modeling – baseline logistic regression, Random Forest.
 
 Model Evaluation – metrics include accuracy, precision, recall, F1-score, and ROC-AUC.
 
-Key Insights
+### Key Insights
 
 Repayment delays are the strongest predictor of default.
 
@@ -65,9 +65,9 @@ Raw usage counts lose significance once repayment delays are accounted for.
 
 Engineered features improve predictive power and interpretability.
 
-Predictive Modeling Results
-Model	Accuracy	ROC-AUC	Defaulter Recall
-Logistic Regression	91%	0.953	64%
-Random Forest	90%	0.946	61%
+### Predictive Modeling Results
+
+<img width="837" height="214" alt="Screenshot 2025-09-25 at 18 46 19" src="https://github.com/user-attachments/assets/bbd45fb1-3af1-42c8-88b9-ff06835a6a2a" />
+
 
 Logistic regression performs slightly better on ranking risk and minority class recall, indicating strong linear relationships in the data.
