@@ -14,7 +14,9 @@ This project demonstrates how to transform raw credit usage data into clean, int
 
 2. Data Description
 
-Where the data comes from (real dataset, synthetic, Kaggle, simulated, etc.)
+This project analyzes the data for a LendTech company. The table has 80K rows with these columns:
+
+
 
 Key variables and what they represent
 
