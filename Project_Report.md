@@ -89,8 +89,9 @@ Interpretation: Younger borrowers may carry higher default risk (possibly less s
 Business Insight: Age could be a risk segmenting factor. 
 
 
-
+  
 **2. Total Credit Usage Amount**
+
 Observation: Both groups skew heavily toward lower values (long right tail).
 
 Defaulters and non-defaulters overlap a lot, but defaulters seem a bit more concentrated at higher usage amounts.
@@ -98,6 +99,76 @@ Defaulters and non-defaulters overlap a lot, but defaulters seem a bit more conc
 Interpretation: Very high credit usage is associated with increased likelihood of default.
 
 Business Insight: Customers with unusually high spending relative to peers may need tighter monitoring.
+
+
+**3. Total Full Credit Usage Count**
+Observation: Users who repeatedly fully use their credit line are significantly more likely to default. 
+Interpretation: number of fully using accounts can be directly related to likelihood of default. as almost all of them fully used their credit more than 5 times , I am thinking about making a binary variable (≥6 full usages) here.
+Business Insight: Customers that fully use their credits more and more, are prone to default.
+
+**4. External Credit Score**
+
+Observation: Non-defaulters are concentrated at higher scores (550+).
+
+Defaulters dominate at lower scores (300–450).
+
+Interpretation: External score works as expected — higher score = lower default risk.
+
+Business Insight: This is a strong signal and likely one of the best predictors.
+
+**5. Total Credit Usage Count**
+
+Observation:Both groups overlap, but defaulters appear more frequent at lower counts.
+
+Interpretation: More transactions = more financial activity, which correlates with lower default probability (financially active customers are healthier)
+
+Business Insight: Customers with very few credit transactions may be higher risk.
+
+**6. Total Repayment Delay Count**
+
+Observation: Clear separation: defaulters dominate at high values (15–20 delays).
+
+Non-defaulters cluster at low values.
+
+Interpretation: This is gold. Repayment delays are a direct red flag for default.
+
+Business Insight: A monitoring rule could flag anyone with >10 delays as high risk.
+
+
+**7. Snappfood Orders Count**
+Observation:
+
+Defaulters dominate at low order counts.
+
+Non-defaulters dominate at high order counts (>500).
+
+Interpretation: Weird but interesting! Customers who order food more often are less likely to default (maybe correlated with stable income or lifestyle).
+
+Business Insight: Alternative behavioral data (like food delivery activity) can be a surprisingly strong predictor.
+
+# Quantify observations
+
+First, I calculated the correlations and ranked them based on this measure:
+
+1-Total repayment delay count (0.446, +) → strongest positive correlation → biggest risk driver.
+
+2-External credit score (-0.339) → strong protective factor.
+
+3-Snappfood orders count (-0.167) → engagement reduces default risk.
+
+4-Age (-0.068) → younger = riskier, but weaker effect.
+
+5-Total credit usage count (+0.053) → small risk driver.
+
+6-Total credit usage amount (+0.045) → small risk driver.
+
+7-Total full credit usage count (+0.017) → almost no correlation (may still matter in interactions).
+
+
+Then, I ran a univariate logistic regressions for each feature against default status and put the results in a Table
+
+<img width="1039" height="211" alt="Screenshot 2025-09-25 at 17 07 28" src="https://github.com/user-attachments/assets/7a07d95b-eb9f-4621-88e0-731bf267c138" />
+
 
 5. Analysis & Findings
 
