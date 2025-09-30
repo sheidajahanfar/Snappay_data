@@ -176,6 +176,13 @@ As the default risk was binary, I ran univariate logistic regressions for each f
 <img width="1039" height="211" alt="Screenshot 2025-09-25 at 17 07 28" src="https://github.com/user-attachments/assets/7a07d95b-eb9f-4621-88e0-731bf267c138" />
 
 
+### Interpretation:
+-Strongest risk factors (positive): repayment delays, frequent/maxed-out credit usage.
+
+-Protective factors (negative): older age, higher external credit score, higher SnappFood engagement.
+
+-Weaker but still significant risks: total spending and total usage count.
+
 
 
 
