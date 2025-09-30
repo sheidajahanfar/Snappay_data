@@ -171,7 +171,7 @@ First, I calculated the correlations and ranked them based on this measure:
 
 ### univariate logistic regressions
 
-I ran univariate logistic regressions for each feature against default status and put the results in a Table
+As the default risk was binary, I ran univariate logistic regressions for each feature against default status and put the results in a Table
 
 <img width="1039" height="211" alt="Screenshot 2025-09-25 at 17 07 28" src="https://github.com/user-attachments/assets/7a07d95b-eb9f-4621-88e0-731bf267c138" />
 
